@@ -11,3 +11,50 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  font-weight: 600;
+}
+
+.date-pickers {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-weight: 600;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.date-pickers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date-picker {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker label {
+  margin-bottom: 5px;
+}
+
+#startDate{
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  border: 1px solid blue;
+}
+
+#endDate{
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  border: 1px solid blue;
+}
