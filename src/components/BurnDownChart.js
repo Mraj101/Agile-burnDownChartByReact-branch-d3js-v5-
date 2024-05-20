@@ -26,18 +26,10 @@ const BurnDownChart = ({ data, labels }) => {
     labels: labels,
     datasets: [
       {
-        label: "Actual Burn Down",
+        label: "Task Progress",
         data: data.actual,
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.3)",
-        fill: true,
-        stepped: true,
-      },
-      {
-        label: "Ideal Burn Down",
-        data: data.ideal,
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
         fill: true,
         stepped: true,
       },
