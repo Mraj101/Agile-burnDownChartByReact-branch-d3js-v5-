@@ -35,6 +35,7 @@ const BurnDownChart = ({ data, labels }) => {
         fill: true,
         stepped: true,
       },
+      sfkdl,
     ],
   };
 
