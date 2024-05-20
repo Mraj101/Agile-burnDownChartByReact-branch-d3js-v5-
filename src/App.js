@@ -115,7 +115,7 @@
 // export default App;
 
 // App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BurnDownChart from "./components/BurnDownChart";
 import "./App.css"; // Import the CSS file for styling
 
@@ -130,47 +130,90 @@ const generateDateRange = (startDate, endDate) => {
   return dateArray;
 };
 
-const App = () => {
-  const [startDate, setStartDate] = useState("2023-01-01");
-  const [endDate, setEndDate] = useState("2023-01-05");
-
+const calculateBurnDownData = (tasks) => {
+  const startDate = tasks[0]?.startDate;
+  const endDate =
+    tasks[tasks.length - 1]?.endDate || new Date().toISOString().split("T")[0];
   const labels = generateDateRange(startDate, endDate);
-  const data = {
-    ideal: [100, 80, 60, 0],
-  };
 
-  const handleStartDateChange = (event) => {
-    setStartDate(event.target.value);
-  };
+  const totalTasks = tasks.length;
+  const idealBurnDown = labels.map(
+    (_, index) => totalTasks - (totalTasks / labels.length) * index
+  );
+  const actualBurnDown = Array(labels.length).fill(totalTasks);
 
-  const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
-  };
+  const taskEndDates = new Map();
+
+  tasks.forEach((task, index) => {
+    if (task.isFinished) {
+      const endDate = task.endDate;
+      taskEndDates.set(endDate, (taskEndDates.get(endDate) || 0) + 1);
+    }
+  });
+
+  let completedTasks = 0;
+
+  labels.forEach((date, index) => {
+    if (taskEndDates.has(date)) {
+      completedTasks += taskEndDates.get(date);
+    }
+    actualBurnDown[index] = totalTasks - completedTasks;
+  });
+
+  return { labels, data: { actual: actualBurnDown, ideal: idealBurnDown } };
+};
+
+const App = () => {
+  const [tasks, setTasks] = useState([
+    {
+      taskName: "Task 1",
+      taskId: 1,
+      startDate: "2023-01-01",
+      endDate: "2023-01-02",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 2",
+      taskId: 2,
+      startDate: "2023-01-02",
+      endDate: "2023-01-03",
+      isFinished: false,
+    },
+    {
+      taskName: "Task 3",
+      taskId: 3,
+      startDate: "2023-01-03",
+      endDate: "2023-01-04",
+      isFinished: false,
+    },
+    {
+      taskName: "Task 4",
+      taskId: 4,
+      startDate: "2023-01-04",
+      endDate: "2023-01-05",
+      isFinished: false,
+    },
+    {
+      taskName: "Task 5",
+      taskId: 5,
+      startDate: "2023-01-05",
+      endDate: "2023-01-06",
+      isFinished: false,
+    },
+  ]);
+
+  const [burnDownData, setBurnDownData] = useState(
+    calculateBurnDownData(tasks)
+  );
+
+  useEffect(() => {
+    setBurnDownData(calculateBurnDownData(tasks));
+  }, [tasks]);
 
   return (
     <div className="container">
-      <h1 className="title"> Burn Down Chart</h1>
-      <div className="date-pickers">
-        <div className="date-picker">
-          <label htmlFor="startDate">Start Date:</label>
-          <input
-            type="date"
-            id="startDate"
-            value={startDate}
-            onChange={handleStartDateChange}
-          />
-        </div>
-        <div className="date-picker">
-          <label htmlFor="endDate">End Date:</label>
-          <input
-            type="date"
-            id="endDate"
-            value={endDate}
-            onChange={handleEndDateChange}
-          />
-        </div>
-      </div>
-      <BurnDownChart labels={labels} data={data} />
+      <h1 className="text-2xl font-bold text-center">Agile Burn Down Chart</h1>
+      <BurnDownChart labels={burnDownData.labels} data={burnDownData.data} />
     </div>
   );
 };

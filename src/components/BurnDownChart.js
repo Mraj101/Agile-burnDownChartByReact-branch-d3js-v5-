@@ -1,4 +1,3 @@
-// BurnDownChart.js
 import React from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -12,7 +11,6 @@ import {
   Legend,
 } from "chart.js";
 
-// Register necessary components with Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,14 +26,21 @@ const BurnDownChart = ({ data, labels }) => {
     labels: labels,
     datasets: [
       {
-        label: "Ideal Burn Down",
-        data: data.ideal,
+        label: "Actual Burn Down",
+        data: data.actual,
         borderColor: "blue",
-        backgroundColor: "blue",
+        backgroundColor: "rgba(0, 0, 255, 0.3)",
         fill: true,
         stepped: true,
       },
-      sfkdl,
+      {
+        label: "Ideal Burn Down",
+        data: data.ideal,
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        fill: true,
+        stepped: true,
+      },
     ],
   };
 
@@ -48,6 +53,9 @@ const BurnDownChart = ({ data, labels }) => {
       title: {
         display: true,
         text: "Burn Down Chart",
+      },
+      tooltip: {
+        enabled: true,
       },
     },
     scales: {
