@@ -131,13 +131,13 @@ const generateDateRange = (startDate, endDate) => {
 };
 
 const calculateBurnDownData = (tasks) => {
-  const startDate = tasks[0]?.startDate; // '2023-01-01'
+  const startDate = tasks[0]?.startDate;
   const endDate =
-    tasks[tasks.length - 1]?.endDate || new Date().toISOString().split("T")[0]; // '2023-01-06'
-  const labels = generateDateRange(startDate, endDate); // ['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']
+    tasks[tasks.length - 1]?.endDate || new Date().toISOString().split("T")[0];
+  const labels = generateDateRange(startDate, endDate);
 
-  const totalTasks = tasks.length; // 5
-  const actualBurnDown = Array(labels.length).fill(totalTasks); // [5, 5, 5, 5, 5, 5]
+  const totalTasks = tasks.length;
+  const actualBurnDown = Array(labels.length).fill(null); // Initialize with null
 
   const taskEndDates = new Map();
 
@@ -153,19 +153,15 @@ const calculateBurnDownData = (tasks) => {
     }
   }
 
-  // taskEndDates: Map { '2023-01-02' => 1 }
-
   let completedTasks = 0;
 
   for (let i = 0; i < labels.length; i++) {
     const date = labels[i];
     if (taskEndDates.has(date)) {
       completedTasks += taskEndDates.get(date);
+      actualBurnDown[i] = totalTasks - completedTasks; // Set value only where task is completed
     }
-    actualBurnDown[i] = totalTasks - completedTasks;
   }
-
-  // actualBurnDown: [5, 4, 4, 4, 4, 4]
 
   return { labels, data: { actual: actualBurnDown } };
 };
