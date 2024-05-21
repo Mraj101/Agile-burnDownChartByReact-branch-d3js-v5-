@@ -217,14 +217,14 @@ const App = () => {
       taskId: 4,
       startDate: "2023-01-10",
       endDate: "2023-01-25",
-      isFinished: false,
+      isFinished: true,
     },
     {
       taskName: "Task 5",
       taskId: 5,
       startDate: "2023-01-05",
       endDate: "2023-01-30",
-      isFinished: false,
+      isFinished: true,
     },
   ]);
 
