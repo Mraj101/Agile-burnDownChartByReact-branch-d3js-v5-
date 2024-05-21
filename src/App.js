@@ -186,7 +186,12 @@ const calculateBurnDownData = (tasks) => {
     actualBurnDown[i] = null;
   }
 
-  return { labels, data: { actual: actualBurnDown } };
+  // Extract task names for y-axis labels
+  const taskNames = tasks.map((task) => task.taskName).reverse();
+
+  console.log(taskNames, "console of task names");
+
+  return { labels, data: { actual: actualBurnDown }, taskNames };
 };
 
 const App = () => {
@@ -217,14 +222,14 @@ const App = () => {
       taskId: 4,
       startDate: "2023-01-10",
       endDate: "2023-01-25",
-      isFinished: true,
+      isFinished: false,
     },
     {
       taskName: "Task 5",
       taskId: 5,
       startDate: "2023-01-05",
       endDate: "2023-01-30",
-      isFinished: true,
+      isFinished: false,
     },
   ]);
 
@@ -239,7 +244,11 @@ const App = () => {
   return (
     <div className="container">
       <h1 className="text-2xl font-bold text-center">Agile Burn Down Chart</h1>
-      <BurnDownChart labels={burnDownData.labels} data={burnDownData.data} />
+      <BurnDownChart
+        labels={burnDownData.labels}
+        data={burnDownData.data}
+        taskNames={burnDownData.taskNames}
+      />
     </div>
   );
 };

@@ -21,7 +21,7 @@ ChartJS.register(
   Legend
 );
 
-const BurnDownChart = ({ data, labels }) => {
+const BurnDownChart = ({ data, labels, taskNames }) => {
   const chartData = {
     labels: labels,
     datasets: [
@@ -60,9 +60,14 @@ const BurnDownChart = ({ data, labels }) => {
       y: {
         title: {
           display: true,
-          text: "Work Remaining",
+          text: "Tasks",
         },
         beginAtZero: true,
+        ticks: {
+          callback: function (value, index, values) {
+            return taskNames[value - 1];
+          },
+        },
       },
     },
   };
