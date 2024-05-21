@@ -173,9 +173,8 @@ const calculateBurnDownData = (tasks) => {
 
     console.log("Completed Tasks:", completedTasks);
 
-    // Check if the current date is the first date, then set the totalTasks as the initial value
     if (i === 0) {
-      actualBurnDown[i] = totalTasks;
+      actualBurnDown[i] = totalTasks; // Set the initial value to totalTasks
     } else {
       actualBurnDown[i] = totalTasks - completedTasks;
     }
@@ -186,7 +185,9 @@ const calculateBurnDownData = (tasks) => {
     actualBurnDown[i] = null;
   }
 
-  return { labels, data: { actual: actualBurnDown } };
+  const taskNames = tasks.map((task) => task.taskName);
+
+  return { labels, data: { actual: actualBurnDown }, taskNames, totalTasks };
 };
 
 const App = () => {
@@ -239,7 +240,12 @@ const App = () => {
   return (
     <div className="container">
       <h1 className="text-2xl font-bold text-center">Agile Burn Down Chart</h1>
-      <BurnDownChart labels={burnDownData.labels} data={burnDownData.data} />
+      <BurnDownChart
+        labels={burnDownData.labels}
+        data={burnDownData.data}
+        taskNames={burnDownData.taskNames}
+        totalTasks={burnDownData.totalTasks}
+      />
     </div>
   );
 };
