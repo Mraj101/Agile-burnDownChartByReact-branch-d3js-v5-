@@ -136,8 +136,12 @@ const calculateBurnDownData = (tasks) => {
     tasks[tasks.length - 1]?.endDate || new Date().toISOString().split("T")[0];
   const labels = generateDateRange(startDate, endDate);
 
+  console.log("Labels:", labels);
+
   const totalTasks = tasks.length;
-  const actualBurnDown = Array(labels.length).fill(null); // Initialize with null
+  const actualBurnDown = Array(labels.length).fill(null);
+
+  console.log("Initial actualBurnDown:", actualBurnDown);
 
   const taskEndDates = new Map();
 
@@ -153,14 +157,33 @@ const calculateBurnDownData = (tasks) => {
     }
   }
 
+  console.log("Task end dates:", taskEndDates);
+
   let completedTasks = 0;
+  let lastCompletedDateIndex = -1;
 
   for (let i = 0; i < labels.length; i++) {
     const date = labels[i];
+    console.log("Current Date:", date);
+
     if (taskEndDates.has(date)) {
       completedTasks += taskEndDates.get(date);
-      actualBurnDown[i] = totalTasks - completedTasks; // Set value only where task is completed
+      lastCompletedDateIndex = i;
     }
+
+    console.log("Completed Tasks:", completedTasks);
+
+    // Check if the current date is the first date, then set the totalTasks as the initial value
+    if (i === 0) {
+      actualBurnDown[i] = totalTasks;
+    } else {
+      actualBurnDown[i] = totalTasks - completedTasks;
+    }
+    console.log("Actual Burn Down:", actualBurnDown);
+  }
+
+  for (let i = lastCompletedDateIndex + 1; i < actualBurnDown.length; i++) {
+    actualBurnDown[i] = null;
   }
 
   return { labels, data: { actual: actualBurnDown } };
@@ -186,22 +209,22 @@ const App = () => {
       taskName: "Task 3",
       taskId: 3,
       startDate: "2023-01-03",
-      endDate: "2023-01-04",
-      isFinished: false,
+      endDate: "2023-01-10",
+      isFinished: true,
     },
     {
       taskName: "Task 4",
       taskId: 4,
-      startDate: "2023-01-04",
-      endDate: "2023-01-05",
-      isFinished: false,
+      startDate: "2023-01-10",
+      endDate: "2023-01-25",
+      isFinished: true,
     },
     {
       taskName: "Task 5",
       taskId: 5,
       startDate: "2023-01-05",
-      endDate: "2023-01-06",
-      isFinished: false,
+      endDate: "2023-01-30",
+      isFinished: true,
     },
   ]);
 
