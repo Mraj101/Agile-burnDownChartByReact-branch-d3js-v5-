@@ -1,78 +1,55 @@
 import React from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import Chart from "react-apexcharts";
 
 const BurnDownChart = ({ data, labels, taskNames }) => {
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Task Progress",
-        data: data.actual,
-        borderColor: "blue",
-        backgroundColor: "rgba(0, 0, 255, 0.3)",
-        fill: true,
-        stepped: true,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-      },
+  const chartOptions = {
+    chart: {
+      type: "line",
+      height: 350,
+    },
+    title: {
+      text: "Burn Down Chart",
+      align: "left",
+    },
+    xaxis: {
+      categories: labels,
       title: {
-        display: true,
-        text: "Burn Down Chart",
-      },
-      tooltip: {
-        enabled: true,
+        text: "Time",
       },
     },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Time",
+    yaxis: {
+      title: {
+        text: "Tasks",
+      },
+      labels: {
+        formatter: function (value) {
+          return taskNames[value - 1];
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: "Tasks",
-        },
-        beginAtZero: true,
-        ticks: {
-          callback: function (value, index, values) {
-            return taskNames[value - 1];
-          },
-        },
-      },
+      min: 0,
+      max: taskNames.length,
+    },
+    dataLabels: {
+      enabled: true,
+    },
+    tooltip: {
+      enabled: true,
+    },
+    stroke: {
+      curve: "stepline", // This makes the line chart stepped
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  const series = [
+    {
+      name: "Task Progress",
+      data: data.actual,
+    },
+  ];
+
+  return (
+    <Chart options={chartOptions} series={series} type="line" height={350} />
+  );
 };
 
 export default BurnDownChart;

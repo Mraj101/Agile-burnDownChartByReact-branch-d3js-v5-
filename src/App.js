@@ -136,12 +136,8 @@ const calculateBurnDownData = (tasks) => {
     tasks[tasks.length - 1]?.endDate || new Date().toISOString().split("T")[0];
   const labels = generateDateRange(startDate, endDate);
 
-  console.log("Labels:", labels);
-
   const totalTasks = tasks.length;
   const actualBurnDown = Array(labels.length).fill(null);
-
-  console.log("Initial actualBurnDown:", actualBurnDown);
 
   const taskEndDates = new Map();
 
@@ -157,39 +153,29 @@ const calculateBurnDownData = (tasks) => {
     }
   }
 
-  console.log("Task end dates:", taskEndDates);
-
   let completedTasks = 0;
   let lastCompletedDateIndex = -1;
 
   for (let i = 0; i < labels.length; i++) {
     const date = labels[i];
-    console.log("Current Date:", date);
 
     if (taskEndDates.has(date)) {
       completedTasks += taskEndDates.get(date);
       lastCompletedDateIndex = i;
     }
 
-    console.log("Completed Tasks:", completedTasks);
-
-    // Check if the current date is the first date, then set the totalTasks as the initial value
     if (i === 0) {
       actualBurnDown[i] = totalTasks;
     } else {
       actualBurnDown[i] = totalTasks - completedTasks;
     }
-    console.log("Actual Burn Down:", actualBurnDown);
   }
 
   for (let i = lastCompletedDateIndex + 1; i < actualBurnDown.length; i++) {
     actualBurnDown[i] = null;
   }
 
-  // Extract task names for y-axis labels
   const taskNames = tasks.map((task) => task.taskName).reverse();
-
-  console.log(taskNames, "console of task names");
 
   return { labels, data: { actual: actualBurnDown }, taskNames };
 };
