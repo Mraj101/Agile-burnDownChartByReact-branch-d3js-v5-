@@ -2,6 +2,8 @@ import React from "react";
 import Chart from "react-apexcharts";
 
 const BurnDownChart = ({ data, labels, taskNames }) => {
+  const deadline = labels[labels.length - 1]; // Get the last date in the labels array
+
   const chartOptions = {
     chart: {
       type: "line",
@@ -37,6 +39,22 @@ const BurnDownChart = ({ data, labels, taskNames }) => {
     },
     stroke: {
       curve: "stepline", // This makes the line chart stepped
+    },
+    annotations: {
+      xaxis: [
+        {
+          x: deadline,
+          borderColor: "red",
+          label: {
+            borderColor: "red",
+            style: {
+              color: "#fff",
+              background: "red",
+            },
+            text: "Deadline",
+          },
+        },
+      ],
     },
   };
 
