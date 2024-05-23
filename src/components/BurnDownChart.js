@@ -21,7 +21,7 @@ ChartJS.register(
   Legend
 );
 
-const BurnDownChart = ({ data, labels, taskNames, totalTasks }) => {
+const BurnDownChart = ({ data, labels, taskNames }) => {
   const chartData = {
     labels: labels,
     datasets: [
@@ -48,6 +48,27 @@ const BurnDownChart = ({ data, labels, taskNames, totalTasks }) => {
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: function (tooltipItem) {
+            const labels = tooltipItem?.chart?.data?.labels;
+            const datasets = tooltipItem?.chart?.data?.datasets;
+
+            if (!labels || !datasets) {
+              return "No data";
+            }
+
+            const label = labels[tooltipItem.dataIndex];
+            const value =
+              datasets[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
+
+            if (tooltipItem.dataIndex === labels.length - 1) {
+              return `Deadline: ${label}`;
+            }
+
+            const taskName = taskNames[value - 1] || "Unknown task";
+            return `Task: ${taskName}`;
+          },
+        },
       },
     },
     scales: {
@@ -63,14 +84,11 @@ const BurnDownChart = ({ data, labels, taskNames, totalTasks }) => {
           text: "Tasks",
         },
         beginAtZero: true,
-        min: 0,
-        max: totalTasks,
         ticks: {
           callback: function (value) {
-            const index = totalTasks - value;
-            return taskNames[index - 1] || "";
+            const taskName = taskNames[value - 1] || "";
+            return `${taskName}`;
           },
-          stepSize: 1,
         },
       },
     },
