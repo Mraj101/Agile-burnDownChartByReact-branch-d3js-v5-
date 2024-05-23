@@ -110,7 +110,7 @@ const App = () => {
     setBurnDownData(calculateBurnDownData(tasks));
   }, [tasks]);
 
-  const deadline = "2023-01-08"; // Set your specific deadline date here
+  const deadline = "2023-01-10";
 
   return (
     <div className="container">

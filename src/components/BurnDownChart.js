@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import Annotation from "chartjs-plugin-annotation";
 
 ChartJS.register(
   CategoryScale,
@@ -18,10 +19,11 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Annotation
 );
 
-const BurnDownChart = ({ data, labels, taskNames }) => {
+const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
   const chartData = {
     labels: labels,
     datasets: [
@@ -39,6 +41,23 @@ const BurnDownChart = ({ data, labels, taskNames }) => {
   const options = {
     responsive: true,
     plugins: {
+      annotation: {
+        annotations: {
+          deadlineLine: {
+            type: "line",
+            mode: "vertical",
+            scaleID: "x",
+            value: deadline,
+            borderColor: "red",
+            borderWidth: 2,
+            label: {
+              content: "Deadline",
+              enabled: true,
+              position: "top",
+            },
+          },
+        },
+      },
       legend: {
         display: true,
       },
