@@ -227,6 +227,8 @@ const App = () => {
     setBurnDownData(calculateBurnDownData(tasks));
   }, [tasks]);
 
+  const deadline = "2023-01-08"; // Set your specific deadline date here
+
   return (
     <div className="container">
       <h1 className="text-2xl font-bold text-center">Agile Burn Down Chart</h1>
@@ -234,6 +236,7 @@ const App = () => {
         labels={burnDownData.labels}
         data={burnDownData.data}
         taskNames={burnDownData.taskNames}
+        deadline={deadline}
       />
     </div>
   );

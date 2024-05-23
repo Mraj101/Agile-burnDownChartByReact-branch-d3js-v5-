@@ -1,9 +1,7 @@
 import React from "react";
 import Chart from "react-apexcharts";
 
-const BurnDownChart = ({ data, labels, taskNames }) => {
-  const deadline = labels[labels.length - 1]; // Get the last date in the labels array
-
+const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
   const chartOptions = {
     chart: {
       type: "line",
