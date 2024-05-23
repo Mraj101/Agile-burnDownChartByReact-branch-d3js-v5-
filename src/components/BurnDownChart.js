@@ -36,7 +36,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
       enabled: true,
     },
     stroke: {
-      curve: "stepline", // This makes the line chart stepped
+      curve: "stepline",
     },
     annotations: {
       xaxis: [
