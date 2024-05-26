@@ -6,7 +6,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
 
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 50 };
-    const width = 800 - margin.left - margin.right;
+    const width = 1200 - margin.left - margin.right; // Increased width
     const height = 400 - margin.top - margin.bottom;
 
     // Remove any existing SVG before creating a new one
@@ -52,10 +52,18 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
 
     svg.append("g").call(yAxis);
 
-    // Add the area path
+    // Filter data to only include finished tasks and stop line at last finished task
+    const finishedData = data.actual
+      .map((d, i) => ({
+        date: labels[i],
+        value: d,
+      }))
+      .filter((d, i) => d.value !== null);
+
+    // Add the area path for finished tasks
     svg
       .append("path")
-      .datum(data.actual.map((d, i) => [new Date(labels[i]), d]))
+      .datum(finishedData)
       .attr("fill", "rgba(0, 0, 255, 0.3)")
       .attr("stroke", "blue")
       .attr("stroke-width", 1.5)
@@ -63,8 +71,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
         "d",
         d3
           .line()
-          .x((d) => xScale(d[0]))
-          .y((d) => yScale(d[1]))
+          .x((d) => xScale(new Date(d.date)))
+          .y((d) => yScale(d.value))
           .curve(d3.curveStepAfter)
       );
 
@@ -86,6 +94,42 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
       .attr("fill", "red")
       .attr("text-anchor", "middle")
       .text("Deadline");
+
+    // Create tooltip div
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .style("position", "absolute")
+      .style("background-color", "white")
+      .style("border", "1px solid #ccc")
+      .style("padding", "10px")
+      .style("box-shadow", "0px 0px 5px 0px #aaa")
+      .style("pointer-events", "none")
+      .style("visibility", "hidden");
+
+    // Add points and tooltips for finished tasks
+    svg
+      .selectAll("circle")
+      .data(finishedData)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => xScale(new Date(d.date)))
+      .attr("cy", (d) => yScale(d.value))
+      .attr("r", 5)
+      .attr("fill", "blue")
+      .on("mouseover", function (event, d) {
+        tooltip
+          .style("visibility", "visible")
+          .html(`Date: ${d.date}<br>Tasks remaining: ${d.value}`);
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("top", `${event.pageY - 10}px`)
+          .style("left", `${event.pageX + 10}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("visibility", "hidden");
+      });
   }, [data, labels, taskNames, deadline]);
 
   return <div ref={svgRef}></div>;
