@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import Annotation from "chartjs-plugin-annotation";
+import annotationPlugin from "chartjs-plugin-annotation";
 
 ChartJS.register(
   CategoryScale,
@@ -20,7 +20,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Annotation
+  annotationPlugin
 );
 
 const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
@@ -53,7 +53,19 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
             label: {
               content: "Deadline",
               enabled: true,
-              position: "top",
+              position: "center",
+              yAdjust: -20, // Adjust the label's vertical position
+              backgroundColor: "rgba(255, 255, 255, 0.8)", // Background for better visibility
+              font: {
+                size: 12,
+                weight: "bold",
+              },
+              padding: {
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              },
             },
           },
         },
@@ -96,6 +108,9 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
           display: true,
           text: "Time",
         },
+        grid: {
+          display: false,
+        },
       },
       y: {
         title: {
@@ -111,6 +126,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
         },
       },
     },
+    fill: true,
   };
 
   return <Line data={chartData} options={options} />;
