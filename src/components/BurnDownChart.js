@@ -1,135 +1,94 @@
-import React from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import annotationPlugin from "chartjs-plugin-annotation";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  annotationPlugin
-);
+import React, { useRef, useEffect } from "react";
+import * as d3 from "d3";
 
 const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Task Progress",
-        data: data.actual,
-        borderColor: "blue",
-        backgroundColor: "rgba(0, 0, 255, 0.3)",
-        fill: true,
-        stepped: true,
-      },
-    ],
-  };
+  const svgRef = useRef();
 
-  const options = {
-    responsive: true,
-    plugins: {
-      annotation: {
-        annotations: {
-          deadlineLine: {
-            type: "line",
-            mode: "vertical",
-            scaleID: "x",
-            value: deadline,
-            borderColor: "red",
-            borderWidth: 2,
-            label: {
-              content: "Deadline",
-              enabled: true,
-              position: "center",
-              yAdjust: -20, // Adjust the label's vertical position
-              backgroundColor: "rgba(255, 255, 255, 0.8)", // Background for better visibility
-              font: {
-                size: 12,
-                weight: "bold",
-              },
-              padding: {
-                top: 10,
-                bottom: 10,
-                left: 10,
-                right: 10,
-              },
-            },
-          },
-        },
-      },
-      legend: {
-        display: true,
-      },
-      title: {
-        display: true,
-        text: "Burn Down Chart",
-      },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: function (tooltipItem) {
-            const labels = tooltipItem?.chart?.data?.labels;
-            const datasets = tooltipItem?.chart?.data?.datasets;
+  useEffect(() => {
+    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const width = 800 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
 
-            if (!labels || !datasets) {
-              return "No data";
-            }
+    // Remove any existing SVG before creating a new one
+    d3.select(svgRef.current).select("svg").remove();
 
-            const label = labels[tooltipItem.dataIndex];
-            const value =
-              datasets[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
+    const svg = d3
+      .select(svgRef.current)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            if (tooltipItem.dataIndex === labels.length - 1) {
-              return `Deadline: ${label}`;
-            }
+    // Create scales
+    const xScale = d3
+      .scaleTime()
+      .domain([new Date(labels[0]), new Date(labels[labels.length - 1])])
+      .range([0, width]);
 
-            const taskName = taskNames[value - 1] || "Unknown task";
-            return `Task: ${taskName}`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Time",
-        },
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Tasks",
-        },
-        beginAtZero: true,
-        ticks: {
-          callback: function (value) {
-            const taskName = taskNames[value - 1] || "";
-            return `${taskName}`;
-          },
-        },
-      },
-    },
-    fill: true,
-  };
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(data.actual) || 10])
+      .nice()
+      .range([height, 0]);
 
-  return <Line data={chartData} options={options} />;
+    // Create axes
+    const xAxis = d3
+      .axisBottom(xScale)
+      .ticks(d3.timeDay.every(1))
+      .tickFormat(d3.timeFormat("%Y-%m-%d"));
+    const yAxis = d3
+      .axisLeft(yScale)
+      .ticks(taskNames.length)
+      .tickFormat((d, i) => taskNames[taskNames.length - d - 1] || "");
+
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(xAxis)
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .style("text-anchor", "end");
+
+    svg.append("g").call(yAxis);
+
+    // Add the area path
+    svg
+      .append("path")
+      .datum(data.actual.map((d, i) => [new Date(labels[i]), d]))
+      .attr("fill", "rgba(0, 0, 255, 0.3)")
+      .attr("stroke", "blue")
+      .attr("stroke-width", 1.5)
+      .attr(
+        "d",
+        d3
+          .line()
+          .x((d) => xScale(d[0]))
+          .y((d) => yScale(d[1]))
+          .curve(d3.curveStepAfter)
+      );
+
+    // Add the deadline line
+    svg
+      .append("line")
+      .attr("x1", xScale(new Date(deadline)))
+      .attr("x2", xScale(new Date(deadline)))
+      .attr("y1", 0)
+      .attr("y2", height)
+      .attr("stroke", "red")
+      .attr("stroke-width", 2);
+
+    // Add the deadline label
+    svg
+      .append("text")
+      .attr("x", xScale(new Date(deadline)))
+      .attr("y", -10)
+      .attr("fill", "red")
+      .attr("text-anchor", "middle")
+      .text("Deadline");
+  }, [data, labels, taskNames, deadline]);
+
+  return <div ref={svgRef}></div>;
 };
 
 export default BurnDownChart;
