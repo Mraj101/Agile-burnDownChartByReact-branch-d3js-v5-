@@ -40,7 +40,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
     const yAxis = d3
       .axisLeft(yScale)
       .ticks(taskNames.length)
-      .tickFormat((d, i) => taskNames[taskNames.length - d - 1] || "");
+      .tickFormat((d, i) => taskNames[taskNames.length - d] || "");
 
     svg
       .append("g")
