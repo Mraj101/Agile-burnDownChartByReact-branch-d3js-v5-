@@ -132,8 +132,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
     const yPositionScale = d3
       .scalePoint()
       .domain(taskNames)
-      .range([height, 0])
-      .padding(0);
+      .range([height - margin.top, margin.bottom])
+      .padding(0.5); // Adjust padding to reduce extra space
 
     svg
       .selectAll(".y-axis-label")
