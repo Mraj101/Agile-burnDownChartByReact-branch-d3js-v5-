@@ -7,7 +7,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 80 };
-    const width = 1200 - margin.left - margin.right;
+    const width = 1600 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
     d3.select(svgRef.current).select("svg").remove();
@@ -27,7 +27,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, taskNames.length + 1])
+      .domain([0, taskNames.length])
       .nice()
       .range([height, 0]);
 
@@ -142,7 +142,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .enter()
       .append("text")
       .attr("class", "y-axis-label")
-      .attr("x", -10)
+      .attr("x", -15)
       .attr("y", (d, i) => yScale(i + 1))
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
