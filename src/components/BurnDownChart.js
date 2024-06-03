@@ -35,7 +35,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .axisBottom(xScale)
       .ticks(d3.timeDay.every(1))
       .tickFormat(d3.timeFormat("%Y-%m-%d"));
-
     const yAxis = d3
       .axisLeft(yScale)
       .tickValues(taskNames.map((_, i) => i + 1))
