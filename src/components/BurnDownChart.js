@@ -7,7 +7,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 80 };
     const width = 1200 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const height = 600 - margin.top - margin.bottom;
 
     d3.select(svgRef.current).select("svg").remove();
 
@@ -26,7 +26,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(data.actual) || 10])
+      .domain([0, d3.min(data.actual) || 10])
       .nice()
       .range([height, 0]);
 
@@ -120,21 +120,33 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
         tooltip.style("visibility", "hidden");
       });
 
-    const reversedTaskNames = taskNames.slice().reverse();
+    const taskEndDates = new Map();
+    tasks.forEach((task) => {
+      const endDate = task.endDate;
+      if (!taskEndDates.has(endDate)) {
+        taskEndDates.set(endDate, []);
+      }
+      taskEndDates.get(endDate).push(task.taskName);
+    });
+
     const yPositionScale = d3
       .scalePoint()
-      .domain(reversedTaskNames)
+      .domain(taskNames)
       .range([height, 0])
       .padding(0);
 
     svg
       .selectAll(".y-axis-label")
-      .data(reversedTaskNames)
+      .data(taskNames)
       .enter()
       .append("text")
       .attr("class", "y-axis-label")
       .attr("x", -10)
-      .attr("y", (d) => yPositionScale(d))
+      .attr("y", (d) => {
+        const taskEndDate = tasks.find((task) => task.taskName === d).endDate;
+        const correspondingDateIndex = labels.indexOf(taskEndDate);
+        return yScale(data.actual[correspondingDateIndex - 1]);
+      })
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
       .attr("fill", "black")
