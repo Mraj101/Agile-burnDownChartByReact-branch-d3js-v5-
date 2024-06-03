@@ -96,8 +96,8 @@ const App = () => {
     {
       taskName: "Task 5",
       taskId: 5,
-      startDate: "2023-01-05",
-      endDate: "2023-01-30",
+      startDate: "2023-01-25",
+      endDate: "2023-01-29",
       isFinished: true,
     },
     {
@@ -112,6 +112,27 @@ const App = () => {
       taskId: 7,
       startDate: "2023-02-25",
       endDate: "2023-02-28",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 8",
+      taskId: 8,
+      startDate: "2023-02-28",
+      endDate: "2023-03-10",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 9",
+      taskId: 9,
+      startDate: "2023-03-10",
+      endDate: "2023-03-15",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 10",
+      taskId: 10,
+      startDate: "2023-03-15",
+      endDate: "2023-03-28",
       isFinished: true,
     },
   ]);

@@ -7,7 +7,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 80 };
     const width = 1200 - margin.left - margin.right;
-    const height = 600 - margin.top - margin.bottom;
+    const height = 500 - margin.top - margin.bottom;
 
     d3.select(svgRef.current).select("svg").remove();
 
@@ -97,43 +97,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .style("pointer-events", "none")
       .style("visibility", "hidden");
 
-    svg
-      .selectAll("circle")
-      .data(finishedData)
-      .enter()
-      .append("circle")
-      .attr("cx", (d) => xScale(new Date(d.date)))
-      .attr("cy", (d) => yScale(d.value))
-      .attr("r", 5)
-      .attr("fill", "blue")
-      .on("mouseover", function (event, d) {
-        tooltip
-          .style("visibility", "visible")
-          .html(`Date: ${d.date}<br>Tasks remaining: ${d.value}`);
-      })
-      .on("mousemove", function (event) {
-        tooltip
-          .style("top", `${event.pageY - 10}px`)
-          .style("left", `${event.pageX + 10}px`);
-      })
-      .on("mouseout", function () {
-        tooltip.style("visibility", "hidden");
-      });
-
-    const taskEndDates = new Map();
-    tasks.forEach((task) => {
-      const endDate = task.endDate;
-      if (!taskEndDates.has(endDate)) {
-        taskEndDates.set(endDate, []);
-      }
-      taskEndDates.get(endDate).push(task.taskName);
-    });
-
-    const yPositionScale = d3
-      .scalePoint()
-      .domain(taskNames)
-      .range([height - margin.top, margin.bottom])
-      .padding(0.5); // Adjust padding to reduce extra space
+    // Calculate y position dynamically based on the number of tasks
+    const spacing = height / (taskNames.length + 1);
 
     svg
       .selectAll(".y-axis-label")
@@ -142,7 +107,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .append("text")
       .attr("class", "y-axis-label")
       .attr("x", -10)
-      .attr("y", (d) => {
+      .attr("y", (d, i) => {
+        // Position y-axis label at the start of the corresponding task
         const taskEndDate = tasks.find((task) => task.taskName === d).endDate;
         const correspondingDateIndex = labels.indexOf(taskEndDate);
         return yScale(data.actual[correspondingDateIndex - 1]);
@@ -171,6 +137,29 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
           )
           .style("top", `${tooltipY}px`)
           .style("left", `${tooltipX}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("visibility", "hidden");
+      });
+
+    svg
+      .selectAll("circle")
+      .data(finishedData)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => xScale(new Date(d.date)))
+      .attr("cy", (d) => yScale(d.value))
+      .attr("r", 5)
+      .attr("fill", "blue")
+      .on("mouseover", function (event, d) {
+        tooltip
+          .style("visibility", "visible")
+          .html(`Date: ${d.date}<br>Tasks remaining: ${d.value}`);
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("top", `${event.pageY - 10}px`)
+          .style("left", `${event.pageX + 10}px`);
       })
       .on("mouseout", function () {
         tooltip.style("visibility", "hidden");
