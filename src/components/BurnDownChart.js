@@ -5,7 +5,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
   const svgRef = useRef();
 
   useEffect(() => {
-    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const margin = { top: 20, right: 30, bottom: 50, left: 80 };
     const width = 1200 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
@@ -125,7 +125,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .scalePoint()
       .domain(reversedTaskNames)
       .range([height, 0])
-      .padding(1);
+      .padding(0);
 
     svg
       .selectAll(".y-axis-label")

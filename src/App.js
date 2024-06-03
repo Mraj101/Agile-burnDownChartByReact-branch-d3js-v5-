@@ -117,7 +117,7 @@ const App = () => {
     setBurnDownData(calculateBurnDownData(tasks));
   }, [tasks]);
 
-  const deadline = "2023-01-10";
+  const deadline = "2023-01-16";
 
   return (
     <div className="container">
