@@ -135,10 +135,33 @@ const App = () => {
       endDate: "2023-03-28",
       isFinished: true,
     },
+    {
+      taskName: "Task 11",
+      taskId: 11,
+      startDate: "2023-03-28",
+      endDate: "2023-03-29",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 12",
+      taskId: 12,
+      startDate: "2023-03-29",
+      endDate: "2023-04-10",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 13",
+      taskId: 13,
+      startDate: "2023-03-10",
+      endDate: "2023-04-15",
+      isFinished: false,
+    },
   ]);
-
+  const sortedTasks = tasks
+    .slice()
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   const [burnDownData, setBurnDownData] = useState(
-    calculateBurnDownData(tasks)
+    calculateBurnDownData(sortedTasks)
   );
 
   useEffect(() => {

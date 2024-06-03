@@ -26,7 +26,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.min(data.actual) || 10])
+      .domain([0, taskNames.length + 1])
       .nice()
       .range([height, 0]);
 
