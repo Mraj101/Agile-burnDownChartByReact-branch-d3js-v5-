@@ -59,6 +59,10 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       }))
       .filter((d) => d.value !== null);
 
+    const uniqueFinishedData = finishedData.filter((d, i, arr) => {
+      return i === 0 || d.value !== arr[i - 1].value;
+    });
+
     svg
       .append("path")
       .datum(finishedData)
@@ -91,7 +95,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .attr("text-anchor", "middle")
       .text("Deadline");
 
-    // Ensure tooltip element is created only once
     if (!tooltipRef.current) {
       tooltipRef.current = d3
         .select("body")
@@ -152,7 +155,7 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
     svg
       .selectAll("circle")
-      .data(finishedData)
+      .data(uniqueFinishedData)
       .enter()
       .append("circle")
       .attr("cx", (d) => xScale(new Date(d.date)))

@@ -148,21 +148,21 @@ const App = () => {
       taskId: 12,
       startDate: "2023-03-29",
       endDate: "2023-04-10",
-      isFinished: true,
+      isFinished: false,
     },
     {
       taskName: "Task 13",
       taskId: 13,
       startDate: "2023-04-10",
       endDate: "2023-04-15",
-      isFinished: true,
+      isFinished: false,
     },
     {
       taskName: "Task 14",
       taskId: 14,
       startDate: "2023-04-15",
       endDate: "2023-04-16",
-      isFinished: true,
+      isFinished: false,
     },
   ]);
   const sortedTasks = tasks
