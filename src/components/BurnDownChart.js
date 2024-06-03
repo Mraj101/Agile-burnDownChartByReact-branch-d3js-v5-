@@ -6,10 +6,9 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 50 };
-    const width = 1200 - margin.left - margin.right; // Increased width
+    const width = 1200 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
-    // Remove any existing SVG before creating a new one
     d3.select(svgRef.current).select("svg").remove();
 
     const svg = d3
@@ -20,27 +19,23 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create scales
     const xScale = d3
       .scaleTime()
       .domain([new Date(labels[0]), new Date(labels[labels.length - 1])])
       .range([0, width]);
-    // hi
+
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(data.actual) || 10])
       .nice()
       .range([height, 0]);
 
-    // Create axes
     const xAxis = d3
       .axisBottom(xScale)
       .ticks(d3.timeDay.every(1))
       .tickFormat(d3.timeFormat("%Y-%m-%d"));
-    const yAxis = d3
-      .axisLeft(yScale)
-      .ticks(taskNames.length)
-      .tickFormat((d, i) => taskNames[taskNames.length - d] || "");
+
+    const yAxis = d3.axisLeft(yScale).tickFormat(() => "");
 
     svg
       .append("g")
@@ -52,15 +47,13 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
 
     svg.append("g").call(yAxis);
 
-    // Filter data to only include finished tasks and stop line at last finished task
     const finishedData = data.actual
       .map((d, i) => ({
         date: labels[i],
         value: d,
       }))
-      .filter((d, i) => d.value !== null);
+      .filter((d) => d.value !== null);
 
-    // Add the area path for finished tasks
     svg
       .append("path")
       .datum(finishedData)
@@ -76,7 +69,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
           .curve(d3.curveStepAfter)
       );
 
-    // Add the deadline line
     svg
       .append("line")
       .attr("x1", xScale(new Date(deadline)))
@@ -86,7 +78,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .attr("stroke", "red")
       .attr("stroke-width", 2);
 
-    // Add the deadline label
     svg
       .append("text")
       .attr("x", xScale(new Date(deadline)))
@@ -95,7 +86,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .attr("text-anchor", "middle")
       .text("Deadline");
 
-    // Create tooltip div
     const tooltip = d3
       .select("body")
       .append("div")
@@ -107,7 +97,6 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .style("pointer-events", "none")
       .style("visibility", "hidden");
 
-    // Add points and tooltips for finished tasks
     svg
       .selectAll("circle")
       .data(finishedData)
@@ -131,26 +120,27 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
         tooltip.style("visibility", "hidden");
       });
 
+    const reversedTaskNames = taskNames.slice().reverse();
+    const yPositionScale = d3
+      .scalePoint()
+      .domain(reversedTaskNames)
+      .range([height, 0])
+      .padding(1);
+
     svg
       .selectAll(".y-axis-label")
-      .data(taskNames)
+      .data(reversedTaskNames)
       .enter()
       .append("text")
       .attr("class", "y-axis-label")
       .attr("x", -10)
-      .attr("y", (d, i) => yScale(i))
+      .attr("y", (d) => yPositionScale(d))
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
       .attr("fill", "black")
       .text((d) => d)
-      .on("mouseover", function (event, d, i) {
-        let reversedTask = [];
-        let j = 0;
-        for (let i = tasks.length - 1; i >= 0; i--) {
-          reversedTask.push(tasks[i]);
-        }
-        console.log(reversedTask, "reversed");
-        const task = reversedTask.find((task) => task.taskName === d);
+      .on("mouseover", function (event, d) {
+        const task = tasks.find((task) => task.taskName === d);
         const tooltipWidth = 200;
         const mouseX = event.pageX;
         const mouseY = event.pageY;
@@ -163,11 +153,9 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
         tooltip
           .style("visibility", "visible")
           .html(
-            `
-          Task Name: ${task.taskName}<br>
-          Start Date: ${task.startDate}<br>
-          End Date: ${task.endDate}
-        `
+            `Task Name: ${task.taskName}<br>
+            Start Date: ${task.startDate}<br>
+            End Date: ${task.endDate}`
           )
           .style("top", `${tooltipY}px`)
           .style("left", `${tooltipX}px`);
