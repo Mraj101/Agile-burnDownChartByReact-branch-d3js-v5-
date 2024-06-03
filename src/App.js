@@ -152,8 +152,15 @@ const App = () => {
     {
       taskName: "Task 13",
       taskId: 13,
-      startDate: "2023-03-10",
+      startDate: "2023-04-10",
       endDate: "2023-04-15",
+      isFinished: true,
+    },
+    {
+      taskName: "Task 14",
+      taskId: 14,
+      startDate: "2023-04-15",
+      endDate: "2023-04-16",
       isFinished: false,
     },
   ]);
@@ -168,7 +175,7 @@ const App = () => {
     setBurnDownData(calculateBurnDownData(tasks));
   }, [tasks]);
 
-  const deadline = "2023-01-16";
+  const deadline = "2023-04-09";
 
   return (
     <div className="container">
