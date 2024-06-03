@@ -100,6 +100,13 @@ const App = () => {
       endDate: "2023-01-30",
       isFinished: true,
     },
+    {
+      taskName: "Task 6",
+      taskId: 5,
+      startDate: "2023-01-30",
+      endDate: "2023-02-25",
+      isFinished: true,
+    },
   ]);
 
   const [burnDownData, setBurnDownData] = useState(
@@ -120,6 +127,7 @@ const App = () => {
         data={burnDownData.data}
         taskNames={burnDownData.taskNames}
         deadline={deadline}
+        tasks={tasks}
       />
     </div>
   );

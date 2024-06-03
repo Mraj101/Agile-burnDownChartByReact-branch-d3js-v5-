@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
+const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -126,6 +126,51 @@ const BurnDownChart = ({ data, labels, taskNames, deadline }) => {
         tooltip
           .style("top", `${event.pageY - 10}px`)
           .style("left", `${event.pageX + 10}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("visibility", "hidden");
+      });
+
+    svg
+      .selectAll(".y-axis-label")
+      .data(taskNames)
+      .enter()
+      .append("text")
+      .attr("class", "y-axis-label")
+      .attr("x", -10)
+      .attr("y", (d, i) => yScale(i))
+      .attr("dy", "0.35em")
+      .attr("text-anchor", "end")
+      .attr("fill", "black")
+      .text((d) => d)
+      .on("mouseover", function (event, d, i) {
+        let reversedTask = [];
+        let j = 0;
+        for (let i = tasks.length - 1; i >= 0; i--) {
+          reversedTask.push(tasks[i]);
+        }
+        console.log(reversedTask, "reversed");
+        const task = reversedTask.find((task) => task.taskName === d);
+        const tooltipWidth = 200;
+        const mouseX = event.pageX;
+        const mouseY = event.pageY;
+        const tooltipX =
+          mouseX + tooltipWidth < window.innerWidth
+            ? mouseX + 10
+            : mouseX - tooltipWidth - 10;
+        const tooltipY = mouseY - 10;
+
+        tooltip
+          .style("visibility", "visible")
+          .html(
+            `
+          Task Name: ${task.taskName}<br>
+          Start Date: ${task.startDate}<br>
+          End Date: ${task.endDate}
+        `
+          )
+          .style("top", `${tooltipY}px`)
+          .style("left", `${tooltipX}px`);
       })
       .on("mouseout", function () {
         tooltip.style("visibility", "hidden");
