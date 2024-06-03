@@ -1,3 +1,4 @@
+// BurnDownChart.js
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
@@ -108,10 +109,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .attr("class", "y-axis-label")
       .attr("x", -10)
       .attr("y", (d, i) => {
-        // Position y-axis label at the start of the corresponding task
-        const taskEndDate = tasks.find((task) => task.taskName === d).endDate;
-        const correspondingDateIndex = labels.indexOf(taskEndDate);
-        return yScale(data.actual[correspondingDateIndex - 1]);
+        // Calculate y position based on index
+        return yScale(i + 1);
       })
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")

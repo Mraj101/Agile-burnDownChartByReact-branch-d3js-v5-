@@ -59,6 +59,7 @@ const calculateBurnDownData = (tasks) => {
   }
 
   const taskNames = tasks.map((task) => task.taskName);
+  taskNames.reverse();
 
   return { labels, data: { actual: actualBurnDown }, taskNames };
 };
@@ -105,7 +106,7 @@ const App = () => {
       taskId: 6,
       startDate: "2023-01-30",
       endDate: "2023-02-25",
-      isFinished: false,
+      isFinished: true,
     },
     {
       taskName: "Task 7",
