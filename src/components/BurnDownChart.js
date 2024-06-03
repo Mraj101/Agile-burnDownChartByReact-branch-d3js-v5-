@@ -1,9 +1,9 @@
-// BurnDownChart.js
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
 const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
   const svgRef = useRef();
+  const tooltipRef = useRef();
 
   useEffect(() => {
     const margin = { top: 20, right: 30, bottom: 50, left: 80 };
@@ -91,19 +91,47 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .attr("text-anchor", "middle")
       .text("Deadline");
 
-    const tooltip = d3
-      .select("body")
-      .append("div")
-      .style("position", "absolute")
-      .style("background-color", "white")
-      .style("border", "1px solid #ccc")
-      .style("padding", "10px")
-      .style("box-shadow", "0px 0px 5px 0px #aaa")
-      .style("pointer-events", "none")
-      .style("visibility", "hidden");
+    // Ensure tooltip element is created only once
+    if (!tooltipRef.current) {
+      tooltipRef.current = d3
+        .select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid #ccc")
+        .style("padding", "10px")
+        .style("box-shadow", "0px 0px 5px 0px #aaa")
+        .style("pointer-events", "none")
+        .style("visibility", "hidden");
+    }
 
-    // Calculate y position dynamically based on the number of tasks
-    const spacing = height / (taskNames.length + 1);
+    const tooltip = tooltipRef.current;
+
+    const showTooltip = (event, taskName) => {
+      const task = tasks.find((task) => task.taskName === taskName);
+      const tooltipWidth = 200;
+      const mouseX = event.pageX;
+      const mouseY = event.pageY;
+      const tooltipX =
+        mouseX + tooltipWidth < window.innerWidth
+          ? mouseX + 10
+          : mouseX - tooltipWidth - 10;
+      const tooltipY = mouseY - 10;
+
+      tooltip
+        .style("visibility", "visible")
+        .html(
+          `Task Name: ${task.taskName}<br>
+          Start Date: ${task.startDate}<br>
+          End Date: ${task.endDate}`
+        )
+        .style("top", `${tooltipY}px`)
+        .style("left", `${tooltipX}px`);
+    };
+
+    const hideTooltip = () => {
+      tooltip.style("visibility", "hidden");
+    };
 
     svg
       .selectAll(".y-axis-label")
@@ -112,38 +140,15 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
       .append("text")
       .attr("class", "y-axis-label")
       .attr("x", -10)
-      .attr("y", (d, i) => {
-        // Calculate y position based on index
-        return yScale(i + 1);
-      })
+      .attr("y", (d, i) => yScale(i + 1))
       .attr("dy", "0.35em")
       .attr("text-anchor", "end")
       .attr("fill", "black")
       .text((d) => d)
       .on("mouseover", function (event, d) {
-        const task = tasks.find((task) => task.taskName === d);
-        const tooltipWidth = 200;
-        const mouseX = event.pageX;
-        const mouseY = event.pageY;
-        const tooltipX =
-          mouseX + tooltipWidth < window.innerWidth
-            ? mouseX + 10
-            : mouseX - tooltipWidth - 10;
-        const tooltipY = mouseY - 10;
-
-        tooltip
-          .style("visibility", "visible")
-          .html(
-            `Task Name: ${task.taskName}<br>
-            Start Date: ${task.startDate}<br>
-            End Date: ${task.endDate}`
-          )
-          .style("top", `${tooltipY}px`)
-          .style("left", `${tooltipX}px`);
+        showTooltip(event, d);
       })
-      .on("mouseout", function () {
-        tooltip.style("visibility", "hidden");
-      });
+      .on("mouseout", hideTooltip);
 
     svg
       .selectAll("circle")
@@ -164,10 +169,8 @@ const BurnDownChart = ({ data, labels, taskNames, deadline, tasks }) => {
           .style("top", `${event.pageY - 10}px`)
           .style("left", `${event.pageX + 10}px`);
       })
-      .on("mouseout", function () {
-        tooltip.style("visibility", "hidden");
-      });
-  }, [data, labels, taskNames, deadline]);
+      .on("mouseout", hideTooltip);
+  }, [data, labels, taskNames, deadline, tasks]);
 
   return <div ref={svgRef}></div>;
 };
